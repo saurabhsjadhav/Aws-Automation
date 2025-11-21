@@ -1,6 +1,5 @@
 #!/bin/bash
 
-# Load configuration
 source config.env
 
 echo "Validating AWS CLI..."
@@ -18,24 +17,18 @@ if [ $? -ne 0 ]; then
 fi
 echo "Credentials valid"
 
-# ---------------------------
-# CREATE KEY PAIR
-# ---------------------------
 echo " Checking key pair..."
 if aws ec2 describe-key-pairs --key-names "$KEY_NAME" --region $AWS_REGION >/dev/null 2>&1; then
-    echo "✔ Key pair already exists. Skipping key creation."
+    echo " Key pair already exists. Skipping key creation."
 else
     aws ec2 create-key-pair --key-name "$KEY_NAME" \
         --region $AWS_REGION \
         --query "KeyMaterial" --output text > ${KEY_NAME}.pem
     chmod 400 ${KEY_NAME}.pem
-    echo "✔ Key pair created"
+    echo "Key pair created"
 fi
 
-# ---------------------------
-# CREATE SECURITY GROUP
-# ---------------------------
-echo "🛡 Creating security group..."
+echo "Creating security group..."
 SG_ID=$(aws ec2 describe-security-groups \
         --group-names "$SECURITY_GROUP_NAME" \
         --region $AWS_REGION \
@@ -50,20 +43,16 @@ if [ "$SG_ID" = "None" ] || [ -z "$SG_ID" ]; then
         --query "GroupId" \
         --output text)
     
-    echo "🌐 Adding inbound rule..."
+    echo "Adding inbound rule..."
     aws ec2 authorize-security-group-ingress \
         --group-id $SG_ID \
         --protocol tcp --port 22 --cidr 0.0.0.0/0 \
         --region $AWS_REGION
-    echo "✔ SG created: $SG_ID"
+    echo "SG created: $SG_ID"
 else
-    echo "✔ Security group already exists: $SG_ID"
+    echo "Security group already exists: $SG_ID"
 fi
-
-# ---------------------------
-# CREATE EC2 INSTANCE
-# ---------------------------
-echo "💻 Launching EC2 instance..."
+echo " Launching EC2 instance..."
 
 INSTANCE_ID=$(aws ec2 run-instances \
     --image-id $AMI_ID \
@@ -76,7 +65,7 @@ INSTANCE_ID=$(aws ec2 run-instances \
     --query "Instances[0].InstanceId" \
     --output text)
 
-echo "⏳ Waiting 20 seconds for instance to start..."
+echo "Waiting 20 seconds for instance to start..."
 sleep 20
 
 PUBLIC_IP=$(aws ec2 describe-instances \
