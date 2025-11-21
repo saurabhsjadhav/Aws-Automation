@@ -49,7 +49,7 @@ if aws ec2 describe-key-pairs --key-names "$KEY_NAME" --region $AWS_REGION >/dev
     
     if [ -f "$KEY_NAME.pem" ]; then
         rm -f "$KEY_NAME.pem"
-        echo "✔ Local PEM file deleted"
+        echo " Local PEM file deleted"
     fi
     echo " Key pair deleted"
 else
@@ -65,7 +65,7 @@ BUCKETS=$(aws s3api list-buckets \
  --output text)
 
 if [ -z "$BUCKETS" ]; then
-    echo "✔ No buckets found with prefix"
+    echo " No buckets found with prefix"
 else
     for bucket in $BUCKETS; do
         echo " Removing bucket: $bucket"
@@ -75,7 +75,7 @@ fi
 
 echo ""
 echo "=============================================="
-echo "✔ CLEANUP SUMMARY"
+echo "CLEANUP SUMMARY"
 echo " EC2 Instances      : Deleted"
 echo " Security Group     : Deleted (if existed)"
 echo " Key Pair           : Deleted + PEM removed"
