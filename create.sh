@@ -3,25 +3,25 @@
 # Load configuration
 source config.env
 
-echo "🔍 Validating AWS CLI..."
+echo "Validating AWS CLI..."
 if ! command -v aws &>/dev/null; then
-    echo "❌ AWS CLI not installed."
+    echo "AWS CLI not installed."
     exit 1
 fi
-echo "✔ AWS CLI found"
+echo "AWS CLI found"
 
-echo "🔍 Validating AWS credentials..."
+echo "Validating AWS credentials..."
 aws sts get-caller-identity --region $AWS_REGION >/dev/null 2>&1
 if [ $? -ne 0 ]; then
-    echo "❌ Invalid AWS credentials"
+    echo "Invalid AWS credentials"
     exit 1
 fi
-echo "✔ Credentials valid"
+echo "Credentials valid"
 
 # ---------------------------
 # CREATE KEY PAIR
 # ---------------------------
-echo "🗝 Checking key pair..."
+echo " Checking key pair..."
 if aws ec2 describe-key-pairs --key-names "$KEY_NAME" --region $AWS_REGION >/dev/null 2>&1; then
     echo "✔ Key pair already exists. Skipping key creation."
 else
