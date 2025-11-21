@@ -75,4 +75,24 @@ PUBLIC_IP=$(aws ec2 describe-instances \
     --output text)
 
 echo " Instance launched: $INSTANCE_ID"
-ech
+echo " Creating S3 bucket..."
+RANDOM_VALUE=$RANDOM
+BUCKET_NAME="${BUCKET_NAME_PREFIX}-${RANDOM_VALUE}"
+
+aws s3api create-bucket \
+    --bucket $BUCKET_NAME \
+    --region $AWS_REGION \
+    --create-bucket-configuration LocationConstraint=$AWS_REGION
+
+echo "Bucket created: $BUCKET_NAME"
+
+echo ""
+echo "=============================================="
+echo "RESOURCE CREATION SUMMARY"
+echo " EC2 Instance ID : $INSTANCE_ID"
+echo " Public IP       : $PUBLIC_IP"
+echo " Security Group  : $SG_ID"
+echo " Key Pair        : $KEY_NAME"
+echo " S3 Bucket       : $BUCKET_NAME"
+echo "=============================================="
+
